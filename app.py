@@ -256,30 +256,33 @@ def drug_section(key_prefix):
     for i, d in enumerate(drugs):
         matched_hint = f"  ← 對照：{d['matched']}" if d.get("matched") else ""
         label = f"{STATUS_COLORS.get(d['status'],'⚪')} {d['name'] or '（未填）'} {d['atc']}{matched_hint}"
-        with st.expander(label, expanded=(not d["name"])):
-            c1, c2 = st.columns([3, 1])
-            d["name"]   = c1.text_input("藥品名稱", d["name"], key=f"{key_prefix}_name_{i}")
-            d["status"] = c2.selectbox("用藥狀態", STATUS_LIST,
-                                        STATUS_LIST.index(d["status"]) if d["status"] in STATUS_LIST else 0,
-                                        key=f"{key_prefix}_status_{i}")
-            # ATC chip 風格用 radio 水平排列
-            atc_keys = list(ATC_MAP.keys())
-            atc_labels = [f"{k} {v}" if k else "未分類" for k, v in ATC_MAP.items()]
-            cur_idx = atc_keys.index(d["atc"]) if d["atc"] in atc_keys else atc_keys.index("")
-            sel_atc = st.radio("ATC 分類", atc_labels, index=cur_idx,
-                               horizontal=True, key=f"{key_prefix}_atc_{i}")
-            d["atc"] = atc_keys[atc_labels.index(sel_atc)]
-            if d.get("matched"):
-                st.caption(f"院內對照品項：{d['matched']}")
-
-            ca, cb, cc = st.columns(3)
-            d["dose"]  = ca.text_input("劑量",     d["dose"],  placeholder="5mg",    key=f"{key_prefix}_dose_{i}")
-            d["freq"]  = cb.text_input("頻次",     d["freq"],  placeholder="QD/BID", key=f"{key_prefix}_freq_{i}")
-            d["route"] = cc.text_input("給藥途徑", d["route"], placeholder="PO/IV",  key=f"{key_prefix}_route_{i}")
-            d["note"]  = st.text_input("個別備註", d["note"],  placeholder="特殊說明…", key=f"{key_prefix}_dnote_{i}")
-
-            if st.button("🗑 刪除此藥品", key=f"{key_prefix}_del_{i}"):
-                to_del = i
+        col_del, col_exp = st.columns([0.08, 0.92])
+        if col_del.button("✕", key=f"{key_prefix}_del_{i}", help="刪除此藥品"):
+            to_del = i
+            with st.expander(label, expanded=(not d["name"])):
+                c1, c2 = st.columns([3, 1])
+                d["name"]   = c1.text_input("藥品名稱", d["name"], key=f"{key_prefix}_name_{i}")
+                d["status"] = c2.selectbox("用藥狀態", STATUS_LIST,
+                                            STATUS_LIST.index(d["status"]) if d["status"] in STATUS_LIST else 0,
+                                            key=f"{key_prefix}_status_{i}")
+                # ATC chip 風格用 radio 水平排列
+                atc_keys = list(ATC_MAP.keys())
+                atc_labels = [f"{k} {v}" if k else "未分類" for k, v in ATC_MAP.items()]
+                cur_idx = atc_keys.index(d["atc"]) if d["atc"] in atc_keys else atc_keys.index("")
+                sel_atc = st.radio("ATC 分類", atc_labels, index=cur_idx,
+                                   horizontal=True, key=f"{key_prefix}_atc_{i}")
+                d["atc"] = atc_keys[atc_labels.index(sel_atc)]
+                if d.get("matched"):
+                    st.caption(f"院內對照品項：{d['matched']}")
+    
+                ca, cb, cc = st.columns(3)
+                d["dose"]  = ca.text_input("劑量",     d["dose"],  placeholder="5mg",    key=f"{key_prefix}_dose_{i}")
+                d["freq"]  = cb.text_input("頻次",     d["freq"],  placeholder="QD/BID", key=f"{key_prefix}_freq_{i}")
+                d["route"] = cc.text_input("給藥途徑", d["route"], placeholder="PO/IV",  key=f"{key_prefix}_route_{i}")
+                d["note"]  = st.text_input("個別備註", d["note"],  placeholder="特殊說明…", key=f"{key_prefix}_dnote_{i}")
+    
+                if st.button("🗑 刪除此藥品", key=f"{key_prefix}_del_{i}"):
+                    to_del = i
 
     if to_del is not None:
         drugs.pop(to_del)
