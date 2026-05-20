@@ -296,7 +296,7 @@ with tab2:
     with col_l:
         sway    = st.multiselect("建議方式", ["電話","留訊息","當面建議"], key="sway")
         starget = st.multiselect("建議對象", ["主治醫師","住院醫師","專科護理師","護理師","病患"], key="starget")
-        sresult = st.radio("建議結果", ["同意","不接受","尚待評估"], horizontal=True, key="sresult")
+        # sresult = st.radio("建議結果", ["同意","不接受","尚待評估"], horizontal=True, key="sresult")
     with col_r:
         suggest = st.multiselect("建議內容", SUGGEST_OPTIONS, key="suggest")
         sref    = st.multiselect("參考資料", REF_OPTIONS, key="sref")
